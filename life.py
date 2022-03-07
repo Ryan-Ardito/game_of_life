@@ -1,6 +1,8 @@
 from collections import defaultdict
 from typing import List
 
+import game_of_life
+
 from patterns import StartingPattern
 
 
@@ -22,25 +24,8 @@ class GameOfLife:
 
     def evolve(self) -> None:
         """Update the game to the next state"""
-        hopefuls = defaultdict(int)
-        prev_state: set = self.living_cells.copy()
-
-        for cell in prev_state:
-            x, y = cell
-            neighbors_alive = 0
-            for offset in OFFSETS:
-                a, b = offset
-                poss = (x + a, y + b)
-                if poss in prev_state:
-                    neighbors_alive += 1
-                else:
-                    hopefuls[poss] += 1
-            if neighbors_alive not in LIVE_RULES:
-                self.living_cells.remove(cell)
-
-        for cell in hopefuls:
-            if hopefuls[cell] in SPAWN_RULES:
-                self.living_cells.add(cell)
+        new_set = game_of_life.evolve(self.living_cells)
+        self.living_cells = new_set
 
     def bounded_set(self, width: int, height: int) -> set:
         """Generate a set of live cells within a window and adjust coordinates"""

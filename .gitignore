@@ -3,3 +3,5 @@ venv/
 utils.py
 *.swp
 .vscode/
+target/
+Cargo.lock
