@@ -2,7 +2,8 @@ import sys
 
 import pygame
 
-from life import GameOfLife
+# from life import GameOfLife
+from game_of_life import GameOfLife
 from patterns import Acorn, RandomPattern, GliderGun
 
 WIDTH  = 800
@@ -57,12 +58,10 @@ def main():
     pattern = RandomPattern(WIDTH, HEIGHT, sparsity=8, seed=420)
     # pattern = Acorn()
     # pattern = GliderGun()
-    life = GameOfLife(pattern)
+    life = GameOfLife(pattern.generate())
 
     run(life)
 
 
 if __name__ == '__main__':
     main()
-
-
