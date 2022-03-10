@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use std::{collections::{ HashSet, HashMap }};
+use rustc_hash::{FxHashMap, FxHashSet};
 
 
 const LIVE_RULES: [i8; 2] = [2, 3];
@@ -13,22 +13,22 @@ const OFFSETS: [(i64, i64); 8] = [
 
 #[pyclass]
 pub struct GameOfLife {
-    living_cells: HashSet<(i64, i64)>
+    living_cells: FxHashSet<(i64, i64)>
 }
 
 #[pymethods]
 impl GameOfLife {
 
     #[new]
-    fn new(pattern: HashSet<(i64, i64)>) -> Self {
+    fn new(pattern: FxHashSet<(i64, i64)>) -> Self {
         GameOfLife {
             living_cells: pattern
         }
     }
 
     pub fn evolve(&mut self) {
-        let mut hopefuls: HashMap<(i64, i64), i8> = HashMap::new();
-        let mut next_state: HashSet<(i64, i64)> = HashSet::new();
+        let mut hopefuls: FxHashMap<(i64, i64), i8> = FxHashMap::default();
+        let mut next_state: FxHashSet<(i64, i64)> = FxHashSet::default();
 
         for cell in &self.living_cells {
             let mut neighbors_alive: i8 = 0;
@@ -42,20 +42,20 @@ impl GameOfLife {
                 }
             }
             if LIVE_RULES.contains(&neighbors_alive) {
-                next_state.insert((cell.0, cell.1));
+                next_state.insert(*cell);
             }
         }
         for cell in hopefuls.keys() {
             if SPAWN_RULES.contains(hopefuls.get(cell).unwrap()) {
-                next_state.insert((cell.0, cell.1));
+                next_state.insert(*cell);
             }
         }
         self.living_cells = next_state;
     }
 
-    pub fn bounded_set(&self, width: i64, height: i64) -> HashSet<(i64, i64)> {
+    pub fn bounded_set(&self, width: i64, height: i64) -> FxHashSet<(i64, i64)> {
         // Generate a set of live cells within a window and adjust coordinates
-        let mut grid_window = HashSet::new();
+        let mut grid_window = FxHashSet::default();
         let a = width / 2;
         let b = height / 2;
         for cell in &self.living_cells {
